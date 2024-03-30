@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LLM Chatbot</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+    <style>
+        .chat-container {
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+            text-align: left;
+        }
+        .chat-message {
+            margin-bottom: 10px;
+        }
+        .user-message {
+            background-color: #007bff;
+            color: #fff;
+        }
+        .assistant-message {
+            background-color: #f0f0f0;
+            color: #333;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Enter a topic to chat with the LLM Chatbot:</h1>
+        <div class="chat-container">
+            <div class="chat-message user-message">
+                <span>You: </span>
+                <input type="text" id="user-input" placeholder="Type your message" required>
+            </div>
+            <div class="chat-message assistant-message">
+                <span>Assistant: </span>
+                <span id="assistant-response"></span>
+            </div>
+        </div>
+    </div>
+    <script>
+        document.getElementById('user-input').addEventListener('keydown', function(event) {
+            if (event.key === 'Enter') {
+                event.preventDefault();
+                const input = document.getElementById('user-input').value.trim();
+                if (input) {
+                    fetch('/result', {
+                        method: 'POST',
+                        body: new URLSearchParams({topic: input}),
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        document.getElementById('assistant-response').innerText = data.facts;
+                        document.getElementById('user-input').value = '';
+                        const chatContainer = document.querySelector('.chat-container');
+                        chatContainer.scrollTop = chatContainer.scrollHeight;
+                    });
+                }
+            }
+        });
+    </script>
+</body>
+</html>
